@@ -33,8 +33,11 @@ const LandingNavbar = () => {
         </h1>
       </Link>
       <div className="flex items-center gap-x-2">
+      <Link href="/sign-in" >
+        <Button className="rounded-full" >Sign In</Button>
+      </Link>
         <Link href={isSignedIn ? "/dashboard" : "/sign-up"} >
-            <Button className="rounded-2xl" variant="outline" >Get Started</Button>
+            <Button className="rounded-full" variant="outline" >Get Started</Button>
         </Link>
       </div>
     </nav>
