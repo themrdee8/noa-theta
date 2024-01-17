@@ -13,13 +13,11 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Loading } from "@/components/Loading";
 import { Empty } from "@/components/Empty";
-
-interface ChatCompletionRequestMessageParam {
-  role: string;
-  content: string;
-}
+import { useProVersion } from "@/hooks/UseProVersion";
+import toast from "react-hot-toast";
 
 const MusicPage = () => {
+  const proVersion = useProVersion();
   const router = useRouter();
   const [music, setMusic] = useState<string>();
 
@@ -41,8 +39,11 @@ const MusicPage = () => {
       setMusic(response.data.audio);
       form.reset();
     } catch (error: any) {
-      // TODO: Open Pro model
-      console.log(error);
+      if (error?.response?.status === 403) {
+        proVersion.onOpen();
+      } else {
+        toast.error("Something went wrong");
+      }
     } finally {
       router.refresh();
     }
@@ -96,11 +97,9 @@ const MusicPage = () => {
               <Loading />
             </div>
           )}
-          {!music && !isLoading && (
-            <Empty label={"How may I assist you?"} />
-          )}
+          {!music && !isLoading && <Empty label={"How may I assist you?"} />}
           {music && (
-            <audio controls className="w-full mt-8" >
+            <audio controls className="w-full mt-8">
               <source src={music} />
             </audio>
           )}

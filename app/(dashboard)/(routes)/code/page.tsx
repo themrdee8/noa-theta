@@ -18,6 +18,8 @@ import { cn } from "@/lib/utils";
 import { UserAvatar } from "@/components/UserAvatar";
 import { BotAvatar } from "@/components/BotAvatar";
 import ReactMarkdown from "react-markdown";
+import { useProVersion } from "@/hooks/UseProVersion";
+import toast from "react-hot-toast";
 
 interface ChatCompletionRequestMessageParam {
   role: string;
@@ -25,6 +27,7 @@ interface ChatCompletionRequestMessageParam {
 }
 
 const CodePage = () => {
+  const proVersion = useProVersion();
   const router = useRouter();
   const [messages, setMessages] = useState<ChatCompletionRequestMessageParam[]>(
     []
@@ -55,8 +58,11 @@ const CodePage = () => {
 
       form.reset();
     } catch (error: any) {
-      // TODO: Open Pro model
-      console.log(error);
+      if (error?.response?.status === 403) {
+        proVersion.onOpen();
+      } else {
+        toast.error("Something went wrong");
+      }
     } finally {
       router.refresh();
     }

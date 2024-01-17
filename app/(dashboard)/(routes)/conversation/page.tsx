@@ -11,12 +11,14 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import ChatCompletionRequestMessageParam from "openai/resources/chat/completions"; // May be a problem - timestamp 1:52:24
+import ChatCompletionRequestMessageParam from "openai/resources/chat/completions";
 import { Empty } from "@/components/Empty";
 import { Loading } from "@/components/Loading";
 import { cn } from "@/lib/utils";
 import { UserAvatar } from "@/components/UserAvatar";
 import { BotAvatar } from "@/components/BotAvatar";
+import { useProVersion } from "@/hooks/UseProVersion";
+import toast from "react-hot-toast";
 
 interface ChatCompletionRequestMessageParam {
   role: string;
@@ -24,6 +26,7 @@ interface ChatCompletionRequestMessageParam {
 }
 
 const ConversationPage = () => {
+  const proVersion = useProVersion();
   const router = useRouter();
   const [messages, setMessages] = useState<ChatCompletionRequestMessageParam[]>(
     []
@@ -54,8 +57,11 @@ const ConversationPage = () => {
 
       form.reset();
     } catch (error: any) {
-      // TODO: Open Pro model
-      console.log(error);
+      if (error?.response?.status === 403) {
+        proVersion.onOpen();
+      } else {
+        toast.error("Something went wrong");
+      }
     } finally {
       router.refresh();
     }

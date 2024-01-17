@@ -10,10 +10,9 @@ import { Form, FormControl, FormField, FormItem } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { useState } from "react"; // May be a problem - timestamp 1:52:24
+import { useState } from "react";
 import { Empty } from "@/components/Empty";
 import { Loading } from "@/components/Loading";
-import { cn } from "@/lib/utils";
 import {
   Select,
   SelectContent,
@@ -23,8 +22,11 @@ import {
 } from "@/components/ui/select";
 import { Card, CardFooter } from "@/components/ui/card";
 import Image from "next/image";
+import { useProVersion } from "@/hooks/UseProVersion";
+import toast from "react-hot-toast";
 
 const ImagePage = () => {
+  const proVersion = useProVersion();
   const router = useRouter();
   const [images, setImages] = useState<string[]>([]);
 
@@ -50,8 +52,11 @@ const ImagePage = () => {
       setImages(urls);
       form.reset();
     } catch (error: any) {
-      // TODO: Open Pro model
-      console.log(error);
+      if (error?.response?.status === 403) {
+        proVersion.onOpen();
+      } else {
+        toast.error("Something went wrong");
+      }
     } finally {
       router.refresh();
     }

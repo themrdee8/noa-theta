@@ -13,14 +13,12 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Empty } from "@/components/Empty";
 import { Loading } from "@/components/Loading";
-import { cn } from "@/lib/utils";
+import { useProVersion } from "@/hooks/UseProVersion";
+import toast from "react-hot-toast";
 
-interface ChatCompletionRequestMessageParam {
-  role: string;
-  content: string;
-}
 
 const VideoPage = () => {
+  const proVersion = useProVersion();
   const router = useRouter();
   const [video, setVideo] = useState<string>();
 
@@ -42,8 +40,11 @@ const VideoPage = () => {
       setVideo(response.data[0]);
       form.reset();
     } catch (error: any) {
-      // TODO: Open Pro model
-      console.log(error);
+      if (error?.response?.status === 403) {
+        proVersion.onOpen();
+      } else {
+        toast.error("Something went wrong");
+      }
     } finally {
       router.refresh();
     }

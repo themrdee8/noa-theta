@@ -4,8 +4,14 @@ import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import Sidebar from "./Sidebar";
+import { getApiLimitCount } from "@/lib/api-limit";
 
-const MobileMenu = () => {
+interface MobileMenuProps {
+  apiLimitCount: number;
+  isPro: boolean;
+}
+
+const MobileMenu = ({ apiLimitCount = 0, isPro = false }: MobileMenuProps) => {
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -24,7 +30,7 @@ const MobileMenu = () => {
         </Button>
       </SheetTrigger>
       <SheetContent side="left" className="p-0">
-        <Sidebar />
+        <Sidebar isPro={isPro} apiLimitCount={apiLimitCount} />
       </SheetContent>
     </Sheet>
   );
